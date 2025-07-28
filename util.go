@@ -1,9 +1,13 @@
 // convertToBytes 将给定的值和单位转换为字节数
 package main
 
-import "fmt"
+import (
+	"bufio"
+	"fmt"
+	"io"
+	"os"
+)
 
-//
 func convertToBytes(value int, unit string) int {
 	switch unit {
 	case UNIT_B:
@@ -30,4 +34,33 @@ func bytesToString(value int64) string {
 	} else {
 		return fmt.Sprintf("%d %s", value/1024/1024/1024, UNIT_GB)
 	}
+}
+
+// getFileInfo 获取文件信息
+func getFileInfo(filename string) (fileLine int, fileSize string, err error) {
+	// 获取文件信息
+	fileInfo, err := os.Stat(filename)
+	if err != nil {
+		return
+	}
+	fileSize = bytesToString(fileInfo.Size())
+
+	file, err := os.Open(filename)
+	if err != nil {
+		return
+	}
+	defer file.Close()
+
+	reader := bufio.NewReaderSize(file, 4096) // 设置缓冲区大小
+	for {
+		_, err := reader.ReadBytes('\n') // 读取到下一个换行符
+		if err != nil {
+			if err == io.EOF {
+				break // 文件结束
+			}
+			return fileLine, fileSize, err
+		}
+		fileLine++
+	}
+	return
 }

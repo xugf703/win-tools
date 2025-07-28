@@ -1,1 +1,1 @@
-fyne package --release -id go.windows.file.spliter -os windows -icon images/crocodile.png
+fyne package --release -id go.windows.tools -os windows -icon images/crocodile.png
